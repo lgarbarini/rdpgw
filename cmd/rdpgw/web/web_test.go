@@ -14,8 +14,10 @@ import (
 )
 
 const (
-	testuser = "test_user"
-	gateway  = "https://my.gateway.com:993"
+	testuser 		= "test_user"
+	gateway  		= "https://my.gateway.com:993"
+	not_in_hosts 	= "10.0.0.2:3389"
+
 )
 
 var (
@@ -106,6 +108,26 @@ func TestGetHost(t *testing.T) {
 	}
 	if host != hosts[0] {
 		t.Fatalf("%s does not equal %s", host, hosts[0])
+	}
+
+	// check any_signed
+	c.HostSelection = "any_signed"
+	c.QueryInfo = security.QueryInfo
+	issuer = "rdpgwtest_any_signed"
+	security.QuerySigningKey = key
+	queryToken, err = security.GenerateQueryToken(ctx, not_in_hosts, issuer)
+	if err != nil {
+		t.Fatalf("cannot generate token")
+	}
+	vals.Set("host", queryToken)
+	u.RawQuery = vals.Encode()
+	h = c.NewHandler()
+	host, err = h.getHost(ctx, u)
+	if err != nil {
+		t.Fatalf("Not accepted host %s is in hosts list (err: %s)", not_in_hosts, err)
+	}
+	if host != not_in_hosts {
+		t.Fatalf("%s does not equal %s", host, not_in_hosts)
 	}
 }
 

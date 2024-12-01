@@ -122,6 +122,16 @@ func (h *Handler) getHost(ctx context.Context, u *url.URL) (string, error) {
 			return "", errors.New("invalid query parameter")
 		}
 		return hosts[0], nil
+	case "any_signed":
+		hosts, ok := u.Query()["host"]
+		if !ok {
+			return "", errors.New("invalid query parameter")
+		}
+		host, err := h.queryInfo(ctx, hosts[0], h.queryTokenIssuer)
+		if err != nil {
+			return "", err
+		}
+		return host, nil
 	default:
 		return h.selectRandomHost(), nil
 	}
