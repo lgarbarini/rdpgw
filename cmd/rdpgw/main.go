@@ -194,7 +194,12 @@ func main() {
 
 	if conf.Caps.TokenAuth {
 		gw.CheckPAACookie = security.CheckPAACookie
-		gw.CheckHost = security.CheckSession(security.CheckHost)
+		// anys don't need the inner check if we already performed CheckSession
+		if conf.Server.HostSelection == "any" || conf.Server.HostSelection == "any_signed" {
+			gw.CheckHost = security.CheckSession(security.NoCheckHost)
+		} else {
+			gw.CheckHost = security.CheckSession(security.CheckHost)
+		}
 	} else {
 		gw.CheckHost = security.CheckHost
 	}

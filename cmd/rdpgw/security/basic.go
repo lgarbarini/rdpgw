@@ -13,6 +13,10 @@ var (
 	HostSelection string
 )
 
+func NoCheckHost(ctx context.Context, host string) (bool, error) {
+	return true, nil
+}
+
 func CheckHost(ctx context.Context, host string) (bool, error) {
 	switch HostSelection {
 	case "any":

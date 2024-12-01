@@ -221,6 +221,10 @@ func Load(configFile string) Configuration {
 		log.Fatalf("host selection is set to `signed` but `querytokensigningkey` is not set")
 	}
 
+	if Conf.Server.HostSelection == "any_signed" && len(Conf.Security.QueryTokenSigningKey) == 0 {
+		log.Fatalf("host selection is set to `any_signed` but `querytokensigningkey` is not set")
+	}
+
 	if Conf.Server.BasicAuthEnabled() && Conf.Server.Tls == "disable" {
 		log.Fatalf("basicauth=local and tls=disable are mutually exclusive")
 	}
